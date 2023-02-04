@@ -14,7 +14,13 @@ const Search = () => {
     e.preventDefault();
     if (text) {
       setSearchTerm(text);
-    }
+    };
+  };
+
+  const handleRandomMeal = () => {
+    setSearchTerm('');
+    setText('');
+    fetchRandomMeal();
   };
 
   return (
@@ -35,7 +41,7 @@ const Search = () => {
         </button>
         <button 
           type="button" 
-          onClick={fetchRandomMeal}
+          onClick={handleRandomMeal}
           className="btn btn-hipster"
         >
           Surprise me!

@@ -17,7 +17,7 @@ export const AppProvider = ({ children }) => {
 
   const fetchRandomMeal = () => {
     fetchMeals(randomMealUrl);
-  }
+  };
 
   const fetchMeals = async(url) => {
     setLoading(true);
@@ -35,6 +35,11 @@ export const AppProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    fetchMeals(allMealsUrl);
+  }, [])
+
+  useEffect(() => {
+    if (!searchTerm) return;
     fetchMeals(`${allMealsUrl}${searchTerm}`);
   }, [searchTerm]);
 

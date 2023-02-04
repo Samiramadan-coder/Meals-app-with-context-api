@@ -3,7 +3,6 @@ import { BsHandThumbsUp } from 'react-icons/bs';
 
 const Meals = () => {
   const {meals, loading} = useGlobalContext();
-  console.log(loading);
 
   if (loading) {
     return (
