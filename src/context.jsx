@@ -10,10 +10,23 @@ export const useGlobalContext = () => {
   return useContext(AppContext);
 };
 
+const getFavouritesFromLocalStorage = () => {
+  let favourites = localStorage.getItem('favorites');
+  if (favourites) {
+    favourites = JSON.parse(localStorage.getItem('favorites'));
+  } else {
+    favourites = [];
+  }
+  return favourites;
+}
+
 export const AppProvider = ({ children }) => {
   const [meals, setMeals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [selectedMeal, setSelectedMeal] = useState(null);
+  const [favourites, setFavourite] = useState(getFavouritesFromLocalStorage());
 
   const fetchRandomMeal = () => {
     fetchMeals(randomMealUrl);
@@ -29,9 +42,42 @@ export const AppProvider = ({ children }) => {
         setMeals([]);
       }
     } catch(error) {
-      console.log(error);
+      // console.log(error.response);
     }
     setLoading(false);
+  };
+
+  const selectMeal = (idMeal, favouriteMeal) => {
+    let meal;
+    if (favouriteMeal) {
+      meal = favourites.find(meal => meal.idMeal === idMeal);
+    } else {
+      meal = meals.find(meal => meal.idMeal === idMeal);
+    }
+    setSelectedMeal(meal);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  const addToFavourite = (idMeal) => {
+    const alreadyFavourite = favourites.find(meal => meal.idMeal === idMeal);
+    if (alreadyFavourite) return;
+
+    const meal = meals.find(meal => meal.idMeal === idMeal);
+    const updatedFavourites = [...favourites, meal];
+    setFavourite(updatedFavourites);
+    
+    localStorage.setItem('favorites', JSON.stringify(updatedFavourites));
+  };
+
+  const removeFromFavourite = (idMeal) => {
+    const updatedFavourites = favourites.filter(meal => meal.idMeal !== idMeal);
+    setFavourite(updatedFavourites);
+
+    localStorage.setItem('favorites', JSON.stringify(updatedFavourites));
   };
 
   useEffect(() => {
@@ -44,7 +90,21 @@ export const AppProvider = ({ children }) => {
   }, [searchTerm]);
 
   return (
-    <AppContext.Provider value={{ meals, loading, setSearchTerm, fetchRandomMeal }}>
+    <AppContext.Provider value={
+      { 
+        meals, 
+        loading, 
+        setSearchTerm, 
+        fetchRandomMeal, 
+        showModal, 
+        selectedMeal, 
+        selectMeal,
+        closeModal,
+        favourites,
+        addToFavourite,
+        removeFromFavourite
+      }
+    }>
       { children }
     </AppContext.Provider>
   );
